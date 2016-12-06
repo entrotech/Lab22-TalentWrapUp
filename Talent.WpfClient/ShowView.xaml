@@ -1,0 +1,170 @@
+﻿<UserControl x:Class="Talent.WpfClient.ShowView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:domain="clr-namespace:Talent.Domain;assembly=Talent.Domain"
+             xmlns:local="clr-namespace:Talent.WpfClient"
+             xmlns:converters="clr-namespace:Talent.WpfClient.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="700"
+             Background="{DynamicResource PanelBackground}">
+    <UserControl.Resources>
+        <converters:ShowGenresToTextConverter x:Key="ShowGenresToTextConverter" />
+        <CollectionViewSource x:Key="CreditTypeList" Source="{Binding CreditTypes}" />
+        <CollectionViewSource x:Key="PeopleList" Source="{Binding People}" />
+    </UserControl.Resources>
+    <Grid Margin="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="3*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock
+            Grid.ColumnSpan="4"
+            HorizontalAlignment="Center"
+            Style="{StaticResource ResourceKey=HeadingTextBlockStyle}"
+            Margin="4"
+            Text="{Binding Path=SelectedItem.Title}"/>
+        <Label 
+            Grid.Row="1" Margin="4"
+            HorizontalAlignment="Right"
+            Target="{Binding ElementName=TitleTextBox}"
+            Content="_Title" />
+        <TextBox
+            Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
+            Margin="4,4,20,4"
+            x:Name="TitleTextBox"
+            Text="{Binding Path=SelectedItem.Title, 
+                UpdateSourceTrigger=PropertyChanged, 
+                ValidatesOnNotifyDataErrors=True}"
+            VerticalAlignment="Center" 
+            MaxLength="100"/>
+        <Label 
+            Grid.Row="2" Margin="4"
+            HorizontalAlignment="Right"
+            Target="{Binding ElementName=MpaaRatingComboBox}"
+            Content="_MPAA" />
+        <ComboBox
+            Grid.Row="2" Grid.Column="1" Margin="4,4,20,4"
+            x:Name="MpaaRatingComboBox"
+            SelectedValue="{Binding SelectedItem.MpaaRatingId}"
+            ItemsSource="{Binding MpaaRatings}"
+            SelectedValuePath="Id"
+            DisplayMemberPath="Code"
+            VerticalAlignment="Center" />
+        <Label 
+            Grid.Row="2" Grid.Column="2" Margin="4"
+            HorizontalAlignment="Right"
+            Target="{Binding ElementName=LengthTextBox}"
+            Content="_Length (Min)" />
+        <TextBox
+            Grid.Row="2"
+            Grid.Column="3"
+            Margin="4,4,20,4"
+            x:Name="LengthTextBox"
+            VerticalAlignment="Center"
+            Text="{Binding SelectedItem.LengthInMinutes, 
+                ValidatesOnNotifyDataErrors=True}">
+        </TextBox>
+        <Label 
+            Grid.Row="3" Margin="4"
+            HorizontalAlignment="Right"
+            Target="{Binding ElementName=ReleaseDatePicker}"
+            Content="_Release" />
+        <DatePicker
+            Grid.Row="3" Grid.Column="1" Margin="4,4,20,4"
+            x:Name="ReleaseDatePicker"
+            SelectedDate="{Binding SelectedItem.ReleaseDate, 
+                ValidatesOnNotifyDataErrors=True}"
+            VerticalAlignment="Center"/>
+        
+        <Label 
+            Grid.Row="4" Margin="4"
+            HorizontalAlignment="Right"
+            Target="{Binding ElementName=GenresTextBox}"
+            Content="_Genres" />
+        <Grid Grid.Row="4" Grid.Column="1" 
+              Grid.ColumnSpan="3" Margin="4,4,20,4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox
+		    x:Name="GenresTextBox"
+		    IsEnabled="False"
+		    VerticalAlignment="Center"
+            Text="{Binding SelectedItem.ShowGenres, Mode=OneWay,
+        Converter={StaticResource ShowGenresToTextConverter}}"
+/>
+            <Button Grid.Column="1"
+			Content="..." Height="18" Width="18"
+			x:Name="GenresEditButton" 
+                    Click="GenresEditButton_Click"/>
+        </Grid>
+
+        <Label 
+            Grid.Row="7" Margin="4"
+            HorizontalAlignment="Right"
+            Target="{Binding ElementName=CreditsDataGrid}"
+            Content="_Credits" />
+        <DataGrid
+            Grid.Row="7"
+            Grid.Column="1"
+            Grid.ColumnSpan="3"
+            Margin="4,4,20,4"
+            x:Name="CreditsDataGrid"
+            ItemsSource="{Binding SelectedItem.Credits}"
+            AutoGenerateColumns="False"
+			 CanUserDeleteRows="False"
+            SelectionMode="Single" CellEditEnding="CreditsDataGrid_CellEditEnding">
+            <DataGrid.Columns>
+                <DataGridComboBoxColumn
+                    Width="*"
+                    Header="Credit Type"
+                    x:Name="CreditTypeDropDownColumn"
+                    DisplayMemberPath="Name"
+                    SelectedValuePath="Id"
+                    SelectedValueBinding="{Binding Path=CreditTypeId,
+						UpdateSourceTrigger=PropertyChanged}"
+                    ItemsSource="{Binding Source={StaticResource CreditTypeList}}"
+                    />
+                <DataGridComboBoxColumn
+                    Width="*"
+                    Header="Talent"
+                    x:Name="PersonDropDownColumn"
+                    DisplayMemberPath="LastFirstName"
+                    SelectedValuePath="Id"
+                    SelectedValueBinding="{Binding Path=PersonId,
+						UpdateSourceTrigger=PropertyChanged}"
+                    ItemsSource="{Binding Source={StaticResource PeopleList}}"
+                    />
+                <DataGridTextColumn
+                    Width="*"
+                    Header="Character"
+                    Binding="{Binding Path=Character, 
+						UpdateSourceTrigger=PropertyChanged}" />
+                <DataGridCheckBoxColumn
+                    Width="Auto"
+                    Header="Delete"
+                    Binding="{Binding Path=IsMarkedForDeletion,
+						UpdateSourceTrigger=PropertyChanged}" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </Grid>
+</UserControl>
+
